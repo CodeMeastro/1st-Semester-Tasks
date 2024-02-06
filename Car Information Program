@@ -1,0 +1,537 @@
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<iomanip>
+#include<cmath>
+#include<limits>
+using namespace std;
+
+//Structur of customer
+struct Customers{
+    string Name;
+    string ID;
+    string Password;
+    string Address;
+    string Phone;
+    string Gender;
+};
+
+struct Car {
+  string Car_Name;
+  string Car_Model;
+  string Fuel_type;
+  string Availability;
+};
+
+struct admin{
+    string admin_ID;
+    string password;
+};
+
+struct Rental_Time{
+    int From_Time;
+    int To_Time;
+    string From_Day_Part;
+    string To_Day_Part;
+    string From_month;
+    string To_month;
+    int From_Day;
+    int To_Day;
+    
+};
+
+int customer_login(Customers* customer);
+void Renting_car (string ,Rental_Time &Rent_Information);
+int Input_validation(int , int);
+void customers(); 
+void Generate_receipt2 (string , int , string , string , string , int , string , int , string , int );
+void Generate_receipt1 (string , int , string , string , string , int , string , int );
+
+int main(){
+    customers();
+    return 0;
+}
+//Customer Function starts
+void customers() {
+    Customers customer_data;  //customer info structure calling
+    Rental_Time Rent_information;
+    int Choice, customer_check = 0;
+    customer_check = customer_login( &customer_data);
+    string Customer_Name = customer_data.Name;
+    
+    if( customer_check == 1){
+    cout <<"Welcom "<< Customer_Name<<" !!"<<endl;
+    
+      // Menu to select one thing for customers
+      cout << "Here we are showing menu, Enter your choice!!" << endl;
+      cout << "_____________________________________________" << endl;
+      cout << endl;
+      cout << "1. Want to rent cars" << endl;
+      cout << "2. Want to return cars" << endl;
+      cout << "3. Want to view available cars" << endl;
+      cout << "4. Want to generate rental report for your rental" << endl;
+      cout << "5. Want to exit" << endl;
+      cout << "_____________________________________________" << endl;
+      cout << endl;
+      Choice = Input_validation(0 , 5);  //Input validation for choice
+      
+      if( Choice != 5){
+          if ( Choice == 1 ) {                  
+              Renting_car ( Customer_Name , Rent_information );
+            }
+      
+          else if( Choice == 2 ){
+              //Returning_car();
+           }
+      
+      else if( Choice == 3 ){
+          cout<<"j";
+          }
+      }
+    }
+     
+}        
+
+void Renting_car(string Customer_Name , Rental_Time &Rent){
+    
+    //varibles declaration
+    int Car_Number , Choice1  , Checking = 0 , cars = 0;
+    string Car_Name ,  Name ;
+    char try_again;
+    
+    fstream File;
+    File.open("CarsInfo.txt" , ios::in);
+    
+    //checking if the fiel is not open
+    if(!File.is_open()){
+      cout<<"Error in opening file!";
+    }
+    
+    //calculating number of lines in the file
+    string line;
+    int count = 0;
+    
+    while( getline( File , line)){
+      count++;
+    }
+    
+    File.close();
+    
+    //calculating size of array
+    int array_size = count/4;
+    
+    //Reading data from file to dynamically created array
+    fstream inFile;
+    inFile.open("CarsInfo.txt" , ios::in);
+    if(!inFile.is_open()){
+      cout<<"Error in opening file!";
+    }
+    
+    //Creating Dynamic array
+    Car *Dynamic_array = new Car[array_size];
+    int index = 0;
+    
+    while(!inFile.eof() && index < array_size){
+        getline( inFile , Dynamic_array[index].Car_Name);
+        getline( inFile , Dynamic_array[index].Car_Model);
+        getline( inFile , Dynamic_array[index].Fuel_type);
+        getline( inFile , Dynamic_array[index].Availability);
+        index++;
+    }
+    inFile.close();
+    
+    cout<<"We are showing you the cars and their details!"<<endl;
+    cout<<"______________________________________________________________"<<endl;
+    cout<<endl;
+    cout<<"NO.\tName\t   Model     Fuel_type \t  Status"<<endl;
+    cout<<"______________________________________________________________"<<endl;
+    cout<<endl;
+    
+    //Displaying the cars to select
+    for( int i=0 ; i<array_size ; i++){
+        cout << left << setw(2) <<i+1 << ")" ;
+        cout << left << setw(16) << Dynamic_array[i].Car_Name ;
+        cout << left << setw(10) << Dynamic_array[i].Car_Model;
+        cout << left << setw(13) << Dynamic_array[i].Fuel_type;
+        cout << left << setw(10) << Dynamic_array[i].Availability<<endl;
+    }
+    
+       cout<<endl;
+       cout<<"------------------"<<endl;
+       do{
+           
+       cout<<"Now! Enter the Car-Number which you want to Rent ";
+       Car_Number = Input_validation( 1 , array_size);
+       Car_Name = Dynamic_array[ Car_Number - 1].Car_Name;
+       
+       //To check wether the car is availaible or not
+       Checking = 0; 
+       cout << endl;
+       
+       if( Dynamic_array[ Car_Number - 1].Availability == "Rented" ||
+           Dynamic_array[ Car_Number - 1].Availability == "rented" ||
+           Dynamic_array[ Car_Number - 1].Availability == "Maintenance" ||
+           Dynamic_array[ Car_Number - 1].Availability == "maintenance"  )
+         {
+             cout <<"Sorry!! "<< Car_Name <<" is not Availaible"<<endl;
+             cout << "Rent another one!!" << endl;
+             cout<<"______________________________"<<endl;
+             Checking = 1;
+         }
+         
+    if( Checking == 0 ){
+        
+        //to check how many cars are rented
+        cars++;
+        
+        // Menu to show choices
+        cout << "1. If you want to rent a car for a number of days" << endl;
+        cout << "2. If you want to rent a car for a number of hours" << endl;
+        cout<<"------------------"<<endl;
+        Choice1 = Input_validation(0 , 2);
+        
+        if (Choice1 == 2) {
+            cout << "Enter the day on which you want to rent ";
+            cin >> Rent.From_Day;
+            
+            do{
+              cout << "Enter the month of the above Entered day ";
+              cin >> Rent.From_month;
+            }while( Rent.From_month != "Jan" && Rent.From_month != "Feb" && Rent.From_month != "Mar" && Rent.From_month != "Apr" 
+                     && Rent.From_month != "May" && Rent.From_month != "Jun" && Rent.From_month != "Jul" && Rent.From_month != "Aug" 
+                     && Rent.From_month != "Sep" && Rent.From_month != "Oct" && Rent.From_month != "Nov" && Rent.From_month != "Dec");
+            
+            // Taking time during which the car will be stated as rented
+                cout << "Enter the time from which you want to rent a car (HH) "; 
+                Rent.From_Time = Input_validation(0 , 12);        
+                
+            do{
+                cout << "Enter the part of the day on which going to rent car (AM/PM) ";
+                cin >> Rent.From_Day_Part;
+            } while ( Rent.From_Day_Part != "am" && Rent.From_Day_Part != "pm" && Rent.From_Day_Part != "AM" && Rent.From_Day_Part != "PM");
+                
+                cout << "Enter the time on which you which you will return car (HH) "; // Input Validation for
+                Rent.To_Time = Input_validation(0 , 12);
+                
+            do {
+                cout << "Enter the part of the day to which you want to rent a car (AM/PM) ";
+                cin >> Rent.To_Day_Part;
+            } while (  Rent.To_Day_Part != "am" && Rent.To_Day_Part != "pm" && Rent.To_Day_Part != "AM" && Rent.To_Day_Part != "PM");
+            
+            
+            // Calling function to generate receipt based on above figures
+            Generate_receipt1(Customer_Name , Rent.From_Time , Rent.From_Day_Part , Rent.From_month , Car_Name , Rent.To_Time  , Rent.To_Day_Part , Rent.From_Day);
+            
+            // Mkaing the hours always psitive in figure
+            int hours = abs((12 - Rent.From_Time) + (Rent.To_Time));
+            int pay = ((12 - Rent.From_Time) + (Rent.To_Time))*10;
+            
+            //Storing rental reports of the customer in file
+            fstream OutFile;
+            File.open(Customer_Name + "rental_reports.txt" , ios::app);
+            if( !OutFile.is_open()){
+                cout<<"Error in opening a file"<<endl;
+                cout<<endl;
+                cout<<"___________________________"<<endl;
+            }
+            
+            if( OutFile.is_open()){
+                OutFile << "Rented on Date: "<<Rent.From_Day<<" "<<Rent.From_month<<endl;
+                OutFile << "Car Name: " << Car_Name << endl;
+                OutFile << "Time to rent: "<<Rent.From_Time<<" "<<Rent.From_Day_Part<<endl;
+                OutFile << "Time to return : "<<Rent.From_Time<<" "<<Rent.From_Day_Part<<endl;
+                OutFile << "Total Hours Used: "<<hours<<endl;
+                OutFile <<" Total amount: "<<pay<<"$"<<endl;
+            }
+            
+            // Closing the file
+            OutFile.close();
+            
+        } else if (Choice1 == 1) {
+            
+            cout << "Enter the day on which you want to rent (10 JAN) ";
+            Rent.From_Day = Input_validation(0 , 31);
+            
+            do{
+              cout << "Enter the month of the above Entered day ";
+              cin >> Rent.From_month;
+            }while( Rent.From_month != "Jan" && Rent.From_month != "Feb" && Rent.From_month != "Mar" && Rent.From_month != "Apr" 
+                     && Rent.From_month != "May" && Rent.From_month != "Jun" && Rent.From_month != "Jul" && Rent.From_month != "Aug" 
+                     && Rent.From_month != "Sep" && Rent.From_month != "Oct" && Rent.From_month != "Nov" && Rent.From_month != "Dec");
+
+            cout << "Enter the time on which you want to rent a car (HH) "; 
+            Rent.From_Time = Input_validation(0 , 12); 
+            
+            do{
+                cout << "Enter the part of the day on which you'r going to rent car (AM/PM) ";
+                cin >> Rent.From_Day_Part;
+            } while ( Rent.From_Day_Part != "am" && Rent.From_Day_Part != "pm" && Rent.From_Day_Part != "AM" && Rent.From_Day_Part != "PM");
+             
+            cout << "Enter the day and month on which you want to return (10 JAN) ";
+            Rent.To_Day = Input_validation(0 , 31);
+            
+            do{
+              cout << "Enter the month of the above Entered day ";
+              cin >> Rent.To_month;
+            }while( Rent.To_month != "Jan" && Rent.To_month != "Feb" && Rent.To_month != "Mar" && Rent.To_month != "Apr" 
+                     && Rent.To_month != "May" && Rent.To_month != "Jun" && Rent.To_month != "Jul" && Rent.To_month != "Aug" 
+                     && Rent.To_month != "Sep" && Rent.To_month != "Oct" && Rent.To_month != "Nov" && Rent.To_month != "Dec");
+            
+            cout << "Enter the time on which you want to rent a car (HH) "; 
+            Rent.To_Time = Input_validation(0 , 12); 
+            
+            do{
+                cout << "Enter the part of the day on which you'r going to rent car (AM/PM) ";
+                cin >> Rent.To_Day_Part;
+            } while ( Rent.To_Day_Part != "am" && Rent.To_Day_Part != "pm" && Rent.To_Day_Part != "AM" && Rent.To_Day_Part != "PM");
+    
+            // Calling function to generate receipt based on above figures
+            Generate_receipt2( Customer_Name , Rent.From_Time , Rent.From_Day_Part , Rent.From_month , Car_Name , Rent.To_Time  , Rent.To_Day_Part , Rent.From_Day , Rent.To_month , Rent.To_Day);
+            
+            // Calculating hours and pay according to rental times
+            int pay1 = abs(2 - (Rent.From_Day - Rent.To_Day) * 24);
+            int actual_hours = ((12 - Rent.From_Time) + (Rent.To_Time) + pay1);
+            int total_pay = actual_hours*10;
+            
+            //Storing rental reports of the customer in file
+            fstream File;
+            File.open(Customer_Name + "rental_reports.txt" , ios::app);
+            if( !File.is_open()){
+                cout<<"Error in opening a file"<<endl;
+                cout<<"__________________________"<<endl;
+            }
+            
+            // Writing the rental reports of the customer
+            if( File.is_open()){
+                File << "Date: "<<Rent.From_Day<<" "<<Rent.From_month<<" to "<<Rent.To_Day<<" "<<Rent.To_month<<endl;
+                File << "Car Name: " << Car_Name << endl;
+                File << "Time to rent: "<<Rent.From_Time<<" "<<Rent.From_Day_Part<<endl;
+                File << "Time to return : "<<Rent.From_Time<<" "<<Rent.From_Day_Part<<endl;
+                File << "Total Hours used: "<<actual_hours<<endl;
+                File <<" Total amount to pay: "<<total_pay<<"$"<<endl;
+            }
+            
+            // Closing the file
+            File.close();
+            
+            //Updating data in the array_size
+            Dynamic_array[ Car_Number - 1 ].Availability = "Rented";
+            
+    }
+    }
+    else if( Checking == 1){
+        cout<<"You should try again!!"<<endl;
+    }
+    
+    //Opppertunity to add one new car
+        do {
+           cout << "Want to rent another one (Y/N): ";
+           cin >> try_again;
+        }while(try_again != 'y' && try_again != 'Y' && try_again != 'n' && try_again != 'N');
+
+  } while (try_again == 'y' || try_again == 'Y');
+  
+  
+  // Decalaring the file object
+  fstream nFile;
+  nFile.open("CarsInfo.txt" , ios::out);
+  
+  if( !nFile.is_open()){
+      cout<<"Error in opening a file"<<endl;
+  }
+  
+  string line1;
+  int indexe = 0;
+  
+  // Storing the updated data from array to files
+  while( getline(nFile , line1) && indexe<array_size){
+      nFile <<  Dynamic_array[indexe].Car_Name ;
+      nFile <<  Dynamic_array[indexe].Car_Model ;
+      nFile <<  Dynamic_array[indexe].Fuel_type;
+      nFile <<  Dynamic_array[indexe].Availability ;
+      indexe++;
+  }
+    nFile.close();
+    
+    cout<<"You have successfully rented "<<cars<<" cars"<<endl;
+    cout<<"Thanks for renting cars, be sure to return on time"<<endl;
+}
+
+// Function which will generate receipt
+void Generate_receipt1(string Name , int time1, string parts1 , string month , string car_name, int time2 , string parts2 , int day) {
+    cout << "__________________________________________" << endl;
+    cout << endl;
+    int pay = (12 - time1) + (time2);
+    cout << "Name  :  "<<Name << endl;
+    cout << "Date  :  " << day << " " << month << endl;
+    cout << "Car-Name  : " << car_name << endl;
+    cout << "Car-status  :  rented" << endl;
+    cout << "From time  : " << time1 << parts1 << endl;
+    cout << "To time   :  " << time2 << parts2 << endl;
+    cout << "Car rented for hours  : " << pay << " Hours" << endl;
+    cout << "Amount to pay  : " << pay * 10 << "$" << endl;
+    cout << "__________________________________________" << endl;
+}
+
+void Generate_receipt2(string Name , int time1, string parts1, string month1 , string car_name,  int time2 , string parts2 , int day1 , string month2 , int day2) {
+    cout << "__________________________________________" << endl;
+    cout << endl;
+    int pay1 = abs(2 - (day2 - day1) * 24); //Use absolute difference to avoid negative values
+    int pay2 = ((12 - time1) + (time2) + pay1);
+    cout << "Name  :  XYZ" << endl;
+    cout << "Date  :  " << day1 << " " << month1 << "-" << day2 << " " << month2 << endl;
+    cout << "Car-Name  : " << car_name << endl;
+    cout << "Car-status  :  rented" << endl;
+    cout << "From time  : " << time1 << parts1 << endl;
+    cout << "To time   :  " << time2 << parts2 << endl;
+    cout << "Car rented for hours  : " << pay2 << " Hours" << endl;
+    cout << "Amount to pay  : " << pay2 * 10 << "$" << endl;
+    cout << endl;
+    cout << "__________________________________________" << endl;
+}
+
+int Input_validation(int num1, int num2) {
+    
+  int choice;
+  bool Correct = false;
+  
+  do {
+      
+      // Setting the Correct to false 
+      Correct = false;
+      
+      cout<<endl;
+      cout << "Enter requirement here: ";
+      cin >> choice;
+      
+      if ( cin.fail() || choice > num2 || choice < num1 ) {
+            cin.clear();  // Clear the error flag
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');  // Discard invalid input
+            cout << "Invalid input. Please enter a valid choice (1-3)." << endl;
+            cout << endl;
+            cout<<"-------------------------------------"<<endl;
+            cout<<endl;
+            
+            // Setting the Correct false 
+            Correct = false;
+
+        } else {
+            Correct = true;
+        }
+  } while (!Correct);
+
+  return choice;
+}
+
+int customer_login(Customers *customer){
+  char try_again = 'n' ,count1 = 0;
+  string Name, User_ID, Your_password;
+  bool found = false, File_Exist = true;
+  int count = 0;
+
+  
+    do{
+    File_Exist = true;
+    cout << "Enter your name: ";
+    cin >> Name;
+    cin.clear();
+    cout << "Enter your User name: ";
+    cin >> User_ID;
+    cout << "Enter your password: ";
+    cin >> Your_password;
+    cin.clear();
+
+
+    ifstream File;
+    File.open("customer.txt", ios::in);
+
+    if (!File.is_open()) {
+      cout<<"Error in opening file!!";
+    }
+
+    string line;
+    count = 0;
+    while (getline(File , line)) {
+      count++;
+    }
+    File.close();
+    int array_size = count/6;
+
+    fstream InFile;
+    InFile.open("customer.txt", ios::in);
+    
+    if (!InFile.is_open()) {
+      cout << "Error in opening a file" << endl;
+    }
+    
+    Customers* customer = new Customers[array_size];
+    int index = 0;
+    
+    while (index < array_size) {
+      getline(InFile, customer[index].Name);
+      getline(InFile, customer[index].ID);
+      getline(InFile, customer[index].Password);
+      getline(InFile, customer[index].Phone);
+      getline(InFile, customer[index].Address);
+      getline(InFile, customer[index].Gender);
+      index++;
+    }
+    InFile.close();
+    int count2;
+    for (int i = 0; i < array_size; i++) {
+      
+      if (customer[i].Name == Name) {
+        count2 = 1;
+        cout <<Name<< "! You are a registered customer!!" << endl;
+        if(customer[i].ID == User_ID){
+          found = true;
+          if((customer[i].Password == Your_password) && (found)){
+            cout << "Signed in Successfully!" << endl;
+            cout<<"____________________________________"<<endl;
+            cout<<endl;
+            count = 1;
+          }
+          else{
+            cout << "Your username is correct, but your entered\n";
+            cout << "Password is incorrect!" << endl;
+            cout<<"____________________________________"<<endl;
+            cout<<endl;
+            count = -1;
+          }
+        }
+        else{
+          cout << "Please!! Enter the correct Username!!" << endl;
+          cout<<"______________________________________"<<endl;
+          cout<<endl;
+          count = -1;
+        }
+        break;
+      }
+      
+    }
+
+    if (count2 != 1) {
+      cout << "Invalid Customer" << endl;
+      cout << "Sign-in failed, User not found." << endl;
+      cout << "_____________________________________" << endl;
+      cout<<endl;
+    }
+
+    if( count2 != 1 || count == -1){
+      do{
+      cout<<"You want to try again: ";
+      cin>>try_again;
+      }while( try_again == 'y' && try_again == 'Y' && try_again == 'n' && try_again == 'N');
+    }
+    
+    else if( count2 == 1 || count == 1){
+      do{
+      cout<<"Want to login with another account: ";
+      cin>>try_again;
+      }while( try_again == 'y' && try_again == 'Y' && try_again == 'n' && try_again == 'N');
+    }
+
+}while(try_again == 'y' || try_again == 'Y' );
+
+  return count;
+}
