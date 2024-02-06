@@ -2,6 +2,7 @@
 #include<iomanip>
 #include<string>
 using namespace std;
+
 double total , company_pay , excess_amount , saved_amount ;   //Global Variables
 //int number_of_days();
 int get_time(string);            //Function to get time
