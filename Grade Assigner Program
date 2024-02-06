@@ -1,0 +1,53 @@
+#include<iostream>
+#include<iomanip>
+#include<string>
+using namespace std;
+int main()
+{
+    int count=1,sum = 0 , average = 0;
+    string students_names[5];
+    char students_grades[5];
+    double student1_marks[4]; double student2_marks[4]; double student3_marks[4];
+    double student4_marks[4]; double student5_marks[4];
+    for(int i=0;i<5;i++)
+    {
+        cout<<"Enter the student's name: ";
+        cin>>students_names[i];
+    }
+    for(int i=0;i<5;i++)
+    {
+        cout<<"Enter the marks of: "<<students_names[i]<<endl;
+        for(int j=0;j<4;j++)
+        {
+            cin>>student1_marks[j];
+            sum = sum + student1_marks[j];
+        }
+        average = sum/4;
+      if(average<=100 && average>=90)
+      {
+          students_grades[i] = {'A'};
+      }
+      else if(average<=89 && average>=80)
+      {
+          students_grades[i] = {'B'};
+      }
+      else if(average<=79 && average>=70)
+      {
+          students_grades[i] = {'C'};
+      }
+      else if(average<=69 && average>=60)
+      {
+          students_grades[i] = {'D'};
+      }
+      else
+      {
+          students_grades[i] = {'F'};
+      }
+    }
+    cout<<"Students Names\tGrades"<<endl;
+   for(int  i=0;i<5;i++ ) 
+   {
+       cout<<students_names[i]<<"\t\t"<<students_grades[i]<<endl;
+   }
+   return 0;
+}
